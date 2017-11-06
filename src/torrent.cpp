@@ -3196,9 +3196,8 @@ namespace {
 			&& m_torrent_file
 			&& m_torrent_file->priv())
 		{
-			tcp::endpoint ep;
-			ep = m_ses.get_ipv6_interface();
-			if (ep != tcp::endpoint()) req.ipv6 = ep.address().to_v6();
+			boost::optional<tcp::endpoint> ep = m_ses.get_ipv6_interface();
+			if (ep) req.ipv6 = ep->address().to_v6();
 		}
 #endif
 
@@ -3651,8 +3650,8 @@ namespace {
 		// in order to avoid triggering this case over and over, check whether
 		// this announce was itself triggered by this logic (second_announce)
 
-		if (((!is_any(m_ses.get_ipv6_interface().address()) && tracker_ip.is_v4())
-			|| (!is_any(m_ses.get_ipv4_interface().address()) && tracker_ip.is_v6()))
+		if (((m_ses.get_ipv6_interface() && tracker_ip.is_v4())
+			|| (m_ses.get_ipv4_interface() && tracker_ip.is_v6()))
 			&& !r.second_announce)
 		{
 			std::list<address>::const_iterator i = std::find_if(tracker_ips.begin()
@@ -3675,8 +3674,8 @@ namespace {
 
 				// tell the tracker to bind to the opposite protocol type
 				req.bind_ip = tracker_ip.is_v4()
-					? m_ses.get_ipv6_interface().address()
-					: m_ses.get_ipv4_interface().address();
+					? m_ses.get_ipv6_interface()->address()
+					: m_ses.get_ipv4_interface()->address();
 #ifndef TORRENT_DISABLE_LOGGING
 				debug_log("announce again using %s as the bind interface"
 					, print_address(req.bind_ip).c_str());

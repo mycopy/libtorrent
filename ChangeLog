@@ -1,4 +1,5 @@
 
+	* fix IPv6 tracker announce issue
 	* fix full allocation failure on APFS
 
 1.1.5 release

@@ -1706,12 +1706,12 @@ namespace aux {
 	}
 #endif
 
-	tcp::endpoint session_impl::get_ipv6_interface() const
+	boost::optional<tcp::endpoint> session_impl::get_ipv6_interface() const
 	{
 		return m_ipv6_interface;
 	}
 
-	tcp::endpoint session_impl::get_ipv4_interface() const
+	boost::optional<tcp::endpoint> session_impl::get_ipv4_interface() const
 	{
 		return m_ipv4_interface;
 	}
@@ -1884,8 +1884,8 @@ retry:
 
 		if (m_abort) return;
 
-		m_ipv6_interface = tcp::endpoint();
-		m_ipv4_interface = tcp::endpoint();
+		m_ipv6_interface = boost::none;
+		m_ipv4_interface = boost::none;
 
 		// TODO: instead of having a special case for this, just make the
 		// default listen interfaces be "0.0.0.0:6881,[::]:6881" and use
