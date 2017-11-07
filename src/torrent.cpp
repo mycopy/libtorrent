@@ -3121,8 +3121,7 @@ namespace {
 
 #endif
 
-	void torrent::announce_with_tracker(boost::uint8_t e
-		, address const& bind_interface)
+	void torrent::announce_with_tracker(boost::uint8_t e)
 	{
 		TORRENT_ASSERT(is_single_thread());
 		TORRENT_ASSERT(e == tracker_request::stopped || state() != torrent_status::checking_files);
@@ -3259,8 +3258,6 @@ namespace {
 
 			req.triggered_manually = ae.triggered_manually;
 			ae.triggered_manually = false;
-
-			req.bind_ip = bind_interface;
 
 			if (settings().get_bool(settings_pack::force_proxy))
 			{
@@ -3661,7 +3658,7 @@ namespace {
 				// the tracker did resolve to a different type of address, so announce
 				// to that as well
 
-				// TODO 2: there's a bug when removing a torrent or shutting down the session,
+				// TODO 3: there's a bug when removing a torrent or shutting down the session,
 				// where the second announce is skipped (in this case, the one to the IPv6
 				// name). This should be fixed by generalizing the tracker list structure to
 				// separate the IPv6 and IPv4 addresses as conceptually separate trackers,
@@ -3678,7 +3675,7 @@ namespace {
 					: m_ses.get_ipv4_interface()->address();
 #ifndef TORRENT_DISABLE_LOGGING
 				debug_log("announce again using %s as the bind interface"
-					, print_address(req.bind_ip).c_str());
+					, print_address(*req.bind_ip).c_str());
 #endif
 				m_ses.queue_tracker_request(req, shared_from_this());
 			}
